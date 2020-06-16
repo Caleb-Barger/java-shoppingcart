@@ -41,6 +41,11 @@ public class Cart
 
     }
 
+    public Cart(List<CartItem> products, User user) {
+        this.products = products;
+        this.user = user;
+    }
+
     public long getCartid()
     {
         return cartid;

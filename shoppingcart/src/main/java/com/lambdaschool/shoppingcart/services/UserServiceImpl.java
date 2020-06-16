@@ -2,6 +2,7 @@ package com.lambdaschool.shoppingcart.services;
 
 import com.lambdaschool.shoppingcart.exceptions.ResourceFoundException;
 import com.lambdaschool.shoppingcart.exceptions.ResourceNotFoundException;
+import com.lambdaschool.shoppingcart.models.Cart;
 import com.lambdaschool.shoppingcart.models.User;
 import com.lambdaschool.shoppingcart.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,27 @@ public class UserServiceImpl
 
         newUser.setUsername(user.getUsername());
         newUser.setComments(user.getComments());
+
+        if (user.getUserid() != 0) {
+            userrepos.findById(user.getUserid())
+                    .orElseThrow(() -> new ResourceNotFoundException("User id  " + user.getUserid() + " not found"));
+
+            newUser.setUserid(user.getUserid());
+        }
+
+        newUser.setUsername(user.getUsername().toLowerCase());
+        newUser.setPasswordNoEncrypt(user.getPassword());
+        newUser.setComments(user.getComments().toLowerCase());
+
+        newUser.getCarts()
+                .clear();
+        if (user.getUserid() == 0) {
+            for (Cart cart : user.getCarts()) {
+
+            }
+        }
+
+
 
         if (user.getCarts()
                 .size() > 0)
