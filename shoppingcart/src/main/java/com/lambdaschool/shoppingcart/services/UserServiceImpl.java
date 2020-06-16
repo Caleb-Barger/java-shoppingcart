@@ -3,6 +3,7 @@ package com.lambdaschool.shoppingcart.services;
 import com.lambdaschool.shoppingcart.exceptions.ResourceFoundException;
 import com.lambdaschool.shoppingcart.exceptions.ResourceNotFoundException;
 import com.lambdaschool.shoppingcart.models.Cart;
+import com.lambdaschool.shoppingcart.models.CartItem;
 import com.lambdaschool.shoppingcart.models.User;
 import com.lambdaschool.shoppingcart.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class UserServiceImpl
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private ProductService productService;
 
     @Override
     public List<User> findAll()
@@ -80,7 +84,23 @@ public class UserServiceImpl
                 .clear();
         if (user.getUserid() == 0) {
             for (Cart cart : user.getCarts()) {
+                Cart newCart = cartService.findCartById(cart.getCartid());
 
+                newCart.setUser(newUser);
+                newUser.getCarts().add(newCart);
+
+                newCart.getProducts()
+                        .clear();
+                for (CartItem cartItem : newCart.getProducts()) {
+                    CartItem newCartItem = new CartItem();
+
+                    newCartItem.setCart(newCart);
+                    newCartItem.setProduct(productService.findProductById(cartItem.getProduct().getProductid()));
+                    newCartItem.setQuantity(cartItem.getQuantity());
+                    newCartItem.setComments(cartItem.getComments());
+
+                    newCart.getProducts().add(newCartItem);
+                }
             }
         }
 
